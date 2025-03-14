@@ -5,9 +5,17 @@ import asyncio
 async def main():
     file_loader = FileLoader()
     links = file_loader.load_file()
-    fetcher = FetcherModrinth(links, "")
+    params = {
+        'loaders' : ['neoforge'],
+        'game_versions': ['1.21.1']
+    }
+    fetcher = FetcherModrinth(links,params)
     responses = await fetcher.fetch_all()
-    print(responses)
+    versions = await fetcher.get_latest_version(responses)
+
+    
+
+    print(versions)
 
 if __name__ == "__main__":
     asyncio.run(main())
