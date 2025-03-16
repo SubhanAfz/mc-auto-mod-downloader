@@ -6,6 +6,7 @@ import ssl
 import certifi
 import aiohttp
 from urllib.parse import urlparse
+import os
 
 class FetcherModrinth:
     """
@@ -87,7 +88,7 @@ class FetcherModrinth:
         return latest_versions
 
                     
-    async def _download_verison(self, response: dict) -> bool:
+    async def _download_version(self, response: dict, folder="./") -> bool:
         if not response:
             return None
         url = response["files"][0]["url"]
@@ -97,13 +98,14 @@ class FetcherModrinth:
                     return False
                 
                 file = response["files"][0]["filename"]
+                os.makedirs(folder, exist_ok=True)
                 with open(file, "wb") as f:
                     f.write(await resp.read())
                 
                 return True
     
-    async def download_verisons(self, responses: list[dict]) -> bool:
+    async def download_versions(self, responses: list[dict], folder="./") -> bool:
         if not responses:
             return None
-        tasks = [self._download_verison(response) for response in responses]
+        tasks = [self._download_version(response, folder) for response in responses]
         return await asyncio.gather(*tasks)

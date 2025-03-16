@@ -1,0 +1,12 @@
+name: 'Minecraft auto mod downloader'
+description: 'Automatically download mods for Minecraft'
+inputs:
+  mods-file:
+    description: 'Mod file to download from'
+    required: true
+    default: 'mods.txt'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.mods-file }}
