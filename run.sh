@@ -1,2 +1,2 @@
 #!/bin/sh
-uv run src/downloader/main.py "$@"
+uv run /src/downloader/main.py "$@"
