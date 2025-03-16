@@ -50,7 +50,7 @@ class FetcherModrinth:
         async with aiohttp.ClientSession() as session:
             tasks = [_fetch(session, url) for url in self.links]
             responses = await asyncio.gather(*tasks)
-            return responses[0]
+            return responses
         
     
     """
@@ -59,10 +59,14 @@ class FetcherModrinth:
     Args:
         response (dict): Response from the API.
     """
-    async def _filter_versions(self, response: dict) -> bool:
-        if not response or not all(game_version in self.params["game_versions"] for game_version in response["game_versions"]) or not all(loader in self.params["loaders"] for loader in response["loaders"]):
-            return False
-        return True
+    async def _filter_versions(self, responses: list[dict]) -> list:
+        filtered = []
+        for version in responses:
+            if all(game_version in self.params["game_versions"] for game_version in version["game_versions"]) and all(loader in self.params["loaders"] for loader in version["loaders"]):
+                filtered.append(True)
+            else:
+                filtered.append(False)
+        return filtered
     
 
     """
@@ -71,10 +75,35 @@ class FetcherModrinth:
     Args:
         responses (list): List of responses from the API.
     """
-    async def get_latest_version(self, responses) -> dict:
+    async def get_latest_version(self, responses: list[dict]) -> dict:
         tasks = [self._filter_versions(response) for response in responses]
         r = await asyncio.gather(*tasks)
-        for i, success in enumerate(r):
-            if success:
-                return responses[i]
+        latest_versions = []
+        for i, r_s in enumerate(r):
+            for j, success in enumerate(r_s):
+                if success:
+                    latest_versions.append(responses[i][j])
+                    break
+        return latest_versions
+
+                    
+    async def _download_verison(self, response: dict) -> bool:
+        if not response:
+            return None
+        url = response["files"][0]["url"]
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, ssl=self.ssl_context) as resp:
+                if resp.status != 200:
+                    return False
+                
+                file = response["files"][0]["filename"]
+                with open(file, "wb") as f:
+                    f.write(await resp.read())
+                
+                return True
     
+    async def download_verisons(self, responses: list[dict]) -> bool:
+        if not responses:
+            return None
+        tasks = [self._download_verison(response) for response in responses]
+        return await asyncio.gather(*tasks)
