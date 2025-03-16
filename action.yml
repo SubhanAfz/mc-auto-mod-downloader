@@ -1,7 +1,8 @@
 name: 'Minecraft auto mod downloader'
 description: 'Automatically download mods for Minecraft'
-color: gray-dark
-icon: download-cloud
+branding:
+  color: gray-dark
+  icon: download-cloud
 inputs:
   mods-file:
     description: 'Mod file to download from'
