@@ -63,7 +63,7 @@ class FetcherModrinth:
     async def _filter_versions(self, responses: list[dict]) -> list:
         filtered = []
         for version in responses:
-            if all(game_version in self.params["game_versions"] for game_version in version["game_versions"]) and all(loader in self.params["loaders"] for loader in version["loaders"]):
+            if all(game_version in version["game_versions"] for game_version in self.params["game_versions"]) and all(loader in version["loaders"] for loader in self.params["loaders"]):
                 filtered.append(True)
             else:
                 filtered.append(False)
@@ -79,6 +79,7 @@ class FetcherModrinth:
     async def get_latest_version(self, responses: list[dict]) -> dict:
         tasks = [self._filter_versions(response) for response in responses]
         r = await asyncio.gather(*tasks)
+        print(r)
         latest_versions = []
         for i, r_s in enumerate(r):
             for j, success in enumerate(r_s):
