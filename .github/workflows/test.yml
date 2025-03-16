@@ -1,27 +1,23 @@
-name: Test Action
-on: [push]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      id: checkout
-      uses: actions/checkout@v4
+  name: Test Action
+  on: [push]
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+      - name: Run action
+        uses: ./
+        with:
+          mods-file: 'mods.txt'
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mods
+          path: mods/*.jar
 
-
-    - name: Run action
-      uses: ./
-      with:
-        mods-file: 'mods.txt'
-    - name: List files
-      run: ls -al
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: mods
-        path: /mods/*.jar
-
-    
-    
       
-    
+      
+        
+      

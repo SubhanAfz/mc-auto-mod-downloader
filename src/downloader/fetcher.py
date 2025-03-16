@@ -98,8 +98,10 @@ class FetcherModrinth:
                     return False
                 
                 file = response["files"][0]["filename"]
+                print(f"Downloading {file}...")
                 os.makedirs(folder, exist_ok=True)
                 file = os.path.join(folder, file)
+                print(file)
                 with open(file, "wb") as f:
                     f.write(await resp.read())
                 
@@ -108,5 +110,6 @@ class FetcherModrinth:
     async def download_versions(self, responses: list[dict], folder="./") -> bool:
         if not responses:
             return None
+        os.makedirs(folder, exist_ok=True)
         tasks = [self._download_version(response, folder) for response in responses]
         return await asyncio.gather(*tasks)
