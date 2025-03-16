@@ -99,6 +99,7 @@ class FetcherModrinth:
                 
                 file = response["files"][0]["filename"]
                 os.makedirs(folder, exist_ok=True)
+                file = os.path.join(folder, file)
                 with open(file, "wb") as f:
                     f.write(await resp.read())
                 
